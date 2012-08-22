@@ -1,0 +1,7 @@
+name: MinebotRepair
+main: net.minebot.repairplugin.MinebotRepairPlugin
+version: 0.1
+permissions:
+    minebotrepair.use:
+        description: Allows repairing of items
+        default: op
