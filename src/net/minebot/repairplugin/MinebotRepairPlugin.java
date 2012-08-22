@@ -37,8 +37,7 @@ public class MinebotRepairPlugin extends JavaPlugin implements Listener {
 		if (informedPlayers.contains(p.getName()))
 			return;
 		if (e.getBlock().getType().equals(Material.IRON_BLOCK)) {
-			p.sendMessage(ChatColor.AQUA + "[Repair] " + ChatColor.WHITE + 
-				"You have placed an anvil! Right click with the tool or armor you wish " +
+			repairMessage(p, "You have placed an anvil! Right click with the tool or armor you wish " +
 				"to repair, with the necessary materials in your inventory.");
 			informedPlayers.add(p.getName());
 		}
@@ -64,22 +63,25 @@ public class MinebotRepairPlugin extends JavaPlugin implements Listener {
 			return;
 		}
 		
+		// prevent fishing rods from doing something silly
+		if (p.getItemInHand().getType().equals(Material.FISHING_ROD))
+			e.setCancelled(true);
+		
 		if (!p.hasPermission("minebotrepair.use")) {
-			p.sendMessage(ChatColor.AQUA + "[Repair] " + ChatColor.WHITE + "You do not have permission to repair items.");
+			repairMessage(p, "You do not have permission to repair items.");
 			return;
 		}
 		
 		if (p.getItemInHand().getDurability() == 0) {
-			p.sendMessage(ChatColor.AQUA + "[Repair] " + ChatColor.WHITE + "That item does not " +
-				"require repair.");
+			repairMessage(p, "That item does not require repair.");
 			getLogger().info("DEBUG: " + "Item durability 0, doesn't need repair");
 			return;
 		}
 		
 		if (!p.getInventory().contains(rmaterial.getType())) {
-			p.sendMessage(ChatColor.AQUA + "[Repair] " + ChatColor.WHITE + "You need 1 " + rmaterial.getType().toString() +
-					" to repair this item.");
-			getLogger().info("DEBUG: " + "Doesn't have any " + rmaterial.getType().toString());
+			String costItemName = rmaterial.getType().toString().toLowerCase().replace('_', ' ');
+			repairMessage(p, "You need 1 " + costItemName + " to repair this item.");
+			getLogger().info("DEBUG: " + "Doesn't have 1 " + costItemName);
 			return;
 		}
 		
@@ -108,8 +110,13 @@ public class MinebotRepairPlugin extends JavaPlugin implements Listener {
 		p.updateInventory();
 		
 		if (newDurability == 0)
-			p.sendMessage(ChatColor.AQUA + "[Repair] " + ChatColor.WHITE + "The item is fully repaired!");
+			repairMessage(p, "The item is fully repaired!");
 		else 
-			p.sendMessage(ChatColor.AQUA + "[Repair] " + ChatColor.WHITE + "The item is partly repaired.");
+			repairMessage(p, "The item is partly repaired.");
+		
+	}
+	
+	private void repairMessage(Player p, String message) {
+		p.sendMessage(ChatColor.AQUA + "[Repair] " + ChatColor.WHITE + message);
 	}
 }
